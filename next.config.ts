@@ -1,18 +1,34 @@
-import type { NextConfig } from "next";
+import { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  // Enable experimental features for appDir support
+  reactStrictMode: true,
+  swcMinify: true,
+  compiler: {
+    styledComponents: true,
+  },
   experimental: {
     appDir: true,
   },
-  // Disable static exports since you're deploying to Vercel
-  output: 'standalone',
-  // Enable React strict mode for better development
-  reactStrictMode: true,
-  // Explicitly set the directory where pages are located
-  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
-  // Set the default build directory
-  distDir: '.next'
+  images: {
+    domains: [],
+  },
+  async redirects() {
+    return [
+      {
+        source: '/old-route',
+        destination: '/new-route',
+        permanent: true,
+      },
+    ];
+  },
+  webpack(config) {
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      '@components': require('path').resolve(__dirname, 'src/app/components'),
+      '@hooks': require('path').resolve(__dirname, 'src/app/hooks'),
+    };
+    return config;
+  },
 };
 
 export default nextConfig;
